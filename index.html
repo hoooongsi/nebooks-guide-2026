@@ -142,6 +142,100 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 .tab-btn.active{color:var(--redpen);border-bottom-color:var(--redpen)}
 @media(min-width:700px){.tab-row{max-width:1180px;margin:0 auto;padding:0 28px}}
 
+/* ===== 샘플 신청 버튼 ===== */
+.sample-btn{
+  margin-top:4px;padding:10px 16px;border-radius:10px;
+  background:var(--redpen);color:#fff;font-size:.88rem;font-weight:700;
+  border:none;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;
+}
+.sample-btn:active{opacity:.85}
+
+/* ===== 샘플 신청 오버레이 ===== */
+.sample-overlay{
+  position:fixed;inset:0;background:rgba(28,36,51,.55);
+  z-index:200;display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.sample-overlay.open{opacity:1;pointer-events:auto}
+.sample-sheet{
+  width:100%;max-height:92vh;overflow-y:auto;
+  background:var(--card);border-radius:20px 20px 0 0;
+  padding:24px 20px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);
+}
+.sample-overlay.open .sample-sheet{transform:translateY(0)}
+.sample-title{font-size:1.15rem;font-weight:800;margin-bottom:4px}
+.sample-desc{font-size:.82rem;color:var(--ink-soft);margin-bottom:20px;line-height:1.6}
+.form-group{margin-bottom:16px}
+.form-label{font-size:.85rem;font-weight:700;margin-bottom:6px;display:block}
+.form-label span{color:var(--redpen)}
+.form-input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:.95rem;font-family:inherit;background:var(--card);color:var(--ink);
+}
+.form-input:focus{border-color:var(--redpen);outline:none}
+.form-radio-row{display:flex;gap:10px;flex-wrap:wrap}
+.form-radio{
+  padding:10px 18px;border:1.5px solid var(--line);border-radius:999px;
+  font-size:.9rem;font-weight:600;cursor:pointer;background:var(--card);
+  font-family:inherit;color:var(--ink);
+}
+.form-radio.selected{background:var(--ink);color:#fff;border-color:var(--ink)}
+.book-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;position:relative}
+.book-input-wrap{flex:1;position:relative}
+.book-autocomplete{
+  position:absolute;top:100%;left:0;right:0;background:var(--card);
+  border:1.5px solid var(--line);border-radius:10px;z-index:10;
+  max-height:200px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.book-autocomplete-item{
+  padding:12px 14px;font-size:.9rem;cursor:pointer;border-bottom:1px solid var(--line);
+}
+.book-autocomplete-item:last-child{border-bottom:none}
+.book-autocomplete-item:active{background:var(--paper)}
+.qty-select{
+  width:80px;padding:12px 8px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:.95rem;font-family:inherit;background:var(--card);color:var(--ink);
+}
+.add-book-btn{
+  width:100%;padding:12px;border:1.5px dashed var(--line);border-radius:10px;
+  background:none;color:var(--ink-soft);font-size:.9rem;font-weight:600;
+  cursor:pointer;font-family:inherit;margin-bottom:16px;
+}
+.remove-book-btn{
+  padding:12px 10px;border:none;background:none;color:var(--ink-soft);
+  font-size:1.2rem;cursor:pointer;flex-shrink:0;margin-top:0;
+}
+.kakao-result{
+  background:var(--paper);border-radius:10px;padding:10px 14px;
+  font-size:.85rem;color:var(--ink-soft);margin-top:6px;display:none;
+}
+.submit-btn{
+  width:100%;padding:16px;border-radius:12px;border:none;
+  background:var(--redpen);color:#fff;font-size:1rem;font-weight:800;
+  cursor:pointer;font-family:inherit;margin-top:8px;
+}
+.submit-btn:active{opacity:.85}
+.submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.sample-close{
+  position:absolute;top:20px;right:20px;
+  background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink-soft);
+}
+.place-list{
+  position:absolute;top:100%;left:0;right:0;background:var(--card);
+  border:1.5px solid var(--line);border-radius:10px;z-index:10;
+  max-height:200px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.place-item{padding:12px 14px;font-size:.9rem;cursor:pointer;border-bottom:1px solid var(--line)}
+.place-item:last-child{border-bottom:none}
+.place-item:active{background:var(--paper)}
+.place-name{font-weight:700}
+.place-addr{font-size:.8rem;color:var(--ink-soft);margin-top:2px}
+.success-msg{text-align:center;padding:40px 20px}
+.success-msg .icon{font-size:3rem;margin-bottom:12px}
+.success-msg h2{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+.success-msg p{font-size:.9rem;color:var(--ink-soft);line-height:1.6}
+
 .price-note{padding:0 20px 30px;font-size:.8rem;color:var(--ink-soft);text-align:center;word-break:keep-all}
 @media (prefers-reduced-motion:no-preference){
   .detail-sheet{animation:rise .22s ease-out}
@@ -152,8 +246,13 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 <body>
 
 <header>
-  <div class="company">건강한 배움의 즐거움, NE능률</div>
-  <h1 class="serif"><span class="hl">2026 <span style="color:#E83828">NE</span>능률 영어 가이드북</span></h1>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <div class="company">건강한 배움의 즐거움, NE능률</div>
+      <h1 class="serif"><span class="hl">2026 <span style="color:#E83828">NE</span>능률 영어 가이드북</span></h1>
+    </div>
+    <button class="sample-btn" onclick="openSample()">📦 샘플 신청</button>
+  </div>
 </header>
 
 <div class="tab-row">
@@ -175,6 +274,88 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-sheet" id="detailSheet"></div>
 </div>
+
+<!-- 샘플 신청 오버레이 -->
+<div class="sample-overlay" id="sampleOverlay">
+  <div class="sample-sheet" style="position:relative">
+    <button class="sample-close" onclick="closeSample()">✕</button>
+    <div id="sampleForm">
+      <div class="sample-title">📦 샘플 교재 신청</div>
+      <div class="sample-desc">📚 교재당 최대 3부 · 최대 3종 신청 가능<br>✅ 신청 후 영업담당자 확인 후 순차 발송 · 🚚 영업일 기준 3~5일 소요</div>
+
+      <!-- 학원명 -->
+      <div class="form-group" style="position:relative">
+        <label class="form-label">학원명 <span>*</span></label>
+        <input class="form-input" id="f-place" type="text" placeholder="학원명을 검색해주세요" autocomplete="off" oninput="searchPlace(this.value)">
+        <div class="place-list" id="placeList" style="display:none"></div>
+        <div class="kakao-result" id="kakaoResult"></div>
+      </div>
+
+      <!-- 신청자명 -->
+      <div class="form-group">
+        <label class="form-label">신청자명 <span>*</span></label>
+        <input class="form-input" id="f-name" type="text" placeholder="이름을 입력해주세요">
+      </div>
+
+      <!-- 직책 -->
+      <div class="form-group">
+        <label class="form-label">직책 <span>*</span></label>
+        <div class="form-radio-row" id="f-role">
+          <button class="form-radio" onclick="selectRole(this,'원장')">원장</button>
+          <button class="form-radio" onclick="selectRole(this,'강사')">강사</button>
+          <button class="form-radio" onclick="selectRole(this,'상담실장')">상담실장</button>
+        </div>
+      </div>
+
+      <!-- 연락처 -->
+      <div class="form-group">
+        <label class="form-label">연락처 <span>*</span></label>
+        <input class="form-input" id="f-phone" type="tel" placeholder="010-0000-0000" maxlength="13" oninput="formatPhone(this)">
+      </div>
+
+      <!-- 주소 -->
+      <div class="form-group">
+        <label class="form-label">학원 주소 <span>*</span></label>
+        <input class="form-input" id="f-addr" type="text" placeholder="학원 검색 시 자동 입력됩니다">
+      </div>
+
+      <!-- 신청 교재 -->
+      <div class="form-group">
+        <label class="form-label">신청 교재 및 수량 <span>*</span></label>
+        <div id="bookRows">
+          <div class="book-row" data-idx="0">
+            <div class="book-input-wrap">
+              <input class="form-input" type="text" placeholder="교재명 검색" autocomplete="off" oninput="searchBook(this,0)">
+              <div class="book-autocomplete" style="display:none"></div>
+            </div>
+            <select class="qty-select">
+              <option value="1">1부</option>
+              <option value="2">2부</option>
+              <option value="3">3부</option>
+            </select>
+          </div>
+        </div>
+        <button class="add-book-btn" id="addBookBtn" onclick="addBookRow()">+ 교재 추가 (최대 3종)</button>
+      </div>
+
+      <!-- 추가 요청사항 -->
+      <div class="form-group">
+        <label class="form-label">추가 요청사항</label>
+        <textarea class="form-input" id="f-memo" rows="3" placeholder="예) 부재 시 경비실 맡겨주세요 / 문 앞에 놔주세요" style="resize:none"></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitSample()">샘플 신청하기</button>
+    </div>
+    <div class="success-msg" id="successMsg" style="display:none">
+      <div class="icon">✅</div>
+      <h2>샘플 신청이 완료되었습니다!</h2>
+      <p>신청해 주셔서 감사합니다.<br>영업담당자 확인 후 순차적으로 발송됩니다.<br>영업일 기준 3~5일 소요될 수 있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 카카오 지도 API -->
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b7acae2da7c908bbacdf11a8c716e00e&libraries=services"></script>
 
 <script>
 /* ======================================================================
@@ -1922,6 +2103,178 @@ sheet.addEventListener("touchend",e=>{
 },{passive:true});
 
 render();
+
+/* ===== 샘플 신청 ===== */
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdHEpBxMiYeTiX3E-JHvKldPT3hrMcCTFzlCIDJfp0cF9jVPQ/formResponse";
+const ENTRY = {
+  place: "entry.1672236711",
+  name:  "entry.1698613281",
+  role:  "entry.2006450807",
+  phone: "entry.1136301065",
+  addr:  "entry.263201971",
+  books: "entry.1751045042",
+  memo:  "entry.2110856199"
+};
+
+let selectedRole = "";
+let placeSearchTimer = null;
+let bookCount = 1;
+
+function openSample(){
+  document.getElementById("sampleOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeSample(){
+  document.getElementById("sampleOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.getElementById("sampleOverlay").addEventListener("click", e => {
+  if(e.target.id === "sampleOverlay") closeSample();
+});
+
+function selectRole(btn, role){
+  selectedRole = role;
+  document.querySelectorAll("#f-role .form-radio").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function formatPhone(input){
+  let v = input.value.replace(/\D/g,"");
+  if(v.length <= 3) input.value = v;
+  else if(v.length <= 7) input.value = v.slice(0,3) + "-" + v.slice(3);
+  else input.value = v.slice(0,3) + "-" + v.slice(3,7) + "-" + v.slice(7,11);
+}
+
+function searchPlace(q){
+  clearTimeout(placeSearchTimer);
+  const list = document.getElementById("placeList");
+  if(!q || q.length < 2){ list.style.display="none"; return; }
+  placeSearchTimer = setTimeout(() => {
+    const ps = new kakao.maps.services.Places();
+    ps.keywordSearch(q + " 학원", (data, status) => {
+      if(status !== kakao.maps.services.Status.OK || !data.length){
+        list.style.display="none"; return;
+      }
+      list.innerHTML = data.slice(0,5).map(p => `
+        <div class="place-item" onclick="selectPlace('${p.place_name.replace(/'/g,"\\'")}','${p.address_name.replace(/'/g,"\\'")}')">
+          <div class="place-name">${p.place_name}</div>
+          <div class="place-addr">${p.address_name}</div>
+        </div>`).join("");
+      list.style.display = "block";
+    });
+  }, 300);
+}
+function selectPlace(name, addr){
+  document.getElementById("f-place").value = name;
+  document.getElementById("f-addr").value = addr;
+  document.getElementById("placeList").style.display = "none";
+  const kr = document.getElementById("kakaoResult");
+  kr.textContent = "📍 " + addr;
+  kr.style.display = "block";
+}
+
+function getBookList(){
+  const list = [];
+  SERIES.forEach(s => {
+    s.products.forEach(p => {
+      list.push(s.title + " " + p.name);
+    });
+  });
+  return list;
+}
+function searchBook(input, idx){
+  const q = input.value.trim().toLowerCase();
+  const wrap = input.closest(".book-row");
+  const ac = wrap.querySelector(".book-autocomplete");
+  if(!q){ ac.style.display="none"; return; }
+  const results = getBookList().filter(b => b.toLowerCase().includes(q)).slice(0,8);
+  if(!results.length){ ac.style.display="none"; return; }
+  ac.innerHTML = results.map(b =>
+    `<div class="book-autocomplete-item" onclick="selectBook(this,'${b.replace(/'/g,"\\'")}')">${b}</div>`
+  ).join("");
+  ac.style.display = "block";
+}
+function selectBook(el, name){
+  const row = el.closest(".book-row");
+  row.querySelector("input").value = name;
+  row.querySelector(".book-autocomplete").style.display = "none";
+}
+function addBookRow(){
+  if(bookCount >= 3) return;
+  bookCount++;
+  const idx = bookCount - 1;
+  const div = document.createElement("div");
+  div.className = "book-row";
+  div.dataset.idx = idx;
+  div.innerHTML = `
+    <div class="book-input-wrap">
+      <input class="form-input" type="text" placeholder="교재명 검색" autocomplete="off" oninput="searchBook(this,${idx})">
+      <div class="book-autocomplete" style="display:none"></div>
+    </div>
+    <select class="qty-select">
+      <option value="1">1부</option>
+      <option value="2">2부</option>
+      <option value="3">3부</option>
+    </select>
+    <button class="remove-book-btn" onclick="removeBookRow(this)">✕</button>`;
+  document.getElementById("bookRows").appendChild(div);
+  if(bookCount >= 3) document.getElementById("addBookBtn").style.display = "none";
+}
+function removeBookRow(btn){
+  btn.closest(".book-row").remove();
+  bookCount--;
+  document.getElementById("addBookBtn").style.display = "block";
+}
+
+function submitSample(){
+  const place = document.getElementById("f-place").value.trim();
+  const name  = document.getElementById("f-name").value.trim();
+  const phone = document.getElementById("f-phone").value.trim();
+  const addr  = document.getElementById("f-addr").value.trim();
+  const memo  = document.getElementById("f-memo").value.trim();
+  if(!place || !name || !selectedRole || !phone || !addr){
+    alert("필수 항목을 모두 입력해주세요."); return;
+  }
+  if(phone.replace(/\D/g,"").length < 10){
+    alert("연락처를 올바르게 입력해주세요."); return;
+  }
+  const rows = document.querySelectorAll("#bookRows .book-row");
+  const bookEntries = [];
+  let valid = true;
+  rows.forEach(row => {
+    const bookName = row.querySelector("input").value.trim();
+    const qty = row.querySelector("select").value;
+    if(!bookName){ valid = false; return; }
+    bookEntries.push(`${bookName} × ${qty}부`);
+  });
+  if(!valid || !bookEntries.length){
+    alert("신청 교재를 1종 이상 입력해주세요."); return;
+  }
+  const booksStr = bookEntries.join(", ");
+  const btn = document.querySelector(".submit-btn");
+  btn.disabled = true;
+  btn.textContent = "신청 중...";
+  const body = new URLSearchParams();
+  body.append(ENTRY.place, place);
+  body.append(ENTRY.name,  name);
+  body.append(ENTRY.role,  selectedRole);
+  body.append(ENTRY.phone, phone);
+  body.append(ENTRY.addr,  addr);
+  body.append(ENTRY.books, booksStr);
+  body.append(ENTRY.memo,  memo);
+  fetch(FORM_URL, {
+    method: "POST", mode: "no-cors",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: body.toString()
+  }).then(() => {
+    document.getElementById("sampleForm").style.display = "none";
+    document.getElementById("successMsg").style.display = "block";
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = "샘플 신청하기";
+    alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+  });
+}
 </script>
 </body>
 </html>
