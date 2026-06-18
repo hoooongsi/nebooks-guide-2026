@@ -358,11 +358,22 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 <script>
 function loadKakaoSDK(){
   return new Promise((resolve, reject) => {
-    if(window.kakao && window.kakao.maps){ resolve(); return; }
+    // 이미 로드된 경우
+    if(window.kakao && window.kakao.maps && window.kakao.maps.services){ resolve(); return; }
+    // 스크립트 태그가 이미 추가됐지만 아직 로드 중인 경우 → 완료될 때까지 대기
+    if(window.kakao && window.kakao.maps){
+      const timer = setTimeout(() => reject(new Error("kakao.maps.load timeout")), 5000);
+      kakao.maps.load(() => { clearTimeout(timer); resolve(); });
+      return;
+    }
     const script = document.createElement("script");
     script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=b7acae2da7c908bbacdf11a8c716e00e&libraries=services&autoload=false";
-    script.onload = () => { kakao.maps.load(resolve); };
-    script.onerror = reject;
+    // 5초 타임아웃
+    const timer = setTimeout(() => reject(new Error("Kakao SDK load timeout")), 5000);
+    script.onload = () => {
+      kakao.maps.load(() => { clearTimeout(timer); resolve(); });
+    };
+    script.onerror = () => { clearTimeout(timer); reject(new Error("Kakao SDK script load failed")); };
     document.head.appendChild(script);
   });
 }
@@ -2175,7 +2186,10 @@ function searchPlace(q){
           </div>`).join("");
         list.style.display = "block";
       });
-    }).catch(() => { list.style.display="none"; });
+    }).catch(() => {
+      list.innerHTML = `<div class="place-item" style="color:#888;font-size:13px;padding:10px">학원 검색을 불러오지 못했어요.<br>학원명을 직접 입력해주세요.</div>`;
+      list.style.display = "block";
+    });
   }, 300);
 }
 function selectPlace(name, addr){
@@ -2191,10 +2205,25 @@ function getBookList(){
   const list = [];
   SERIES.forEach(s => {
     s.products.forEach(p => {
-      // 제품명이 이미 시리즈명을 포함하면 제품명만, 아니면 시리즈명 + 제품명
-      const pName = p.name.toLowerCase();
-      const sTitle = s.title.toLowerCase().replace(" 시리즈","");
-      const fullName = pName.startsWith(sTitle) ? p.name : s.title.replace(" 시리즈","") + " " + p.name;
+      const seriesBase = s.title.replace(" 시리즈","");
+      // 시리즈명의 마지막 단어가 제품명 앞에 중복되는지 확인
+      // 예: seriesBase="Grammar Zone 중등", p.name="중등 기본"
+      //     → seriesBase + " " + p.name = "Grammar Zone 중등 중등 기본" (중복)
+      //     → 이 경우 p.name에서 앞 단어들 중 시리즈 끝부분과 겹치는 부분을 제거
+      const seriesWords = seriesBase.split(/\s+/);
+      const productWords = p.name.split(/\s+/);
+
+      // 시리즈 끝에서부터 제품명 앞과 겹치는 단어 수 계산
+      let overlap = 0;
+      for(let i = 1; i <= Math.min(seriesWords.length, productWords.length); i++){
+        const seriesTail = seriesWords.slice(-i).join(" ").toLowerCase();
+        const productHead = productWords.slice(0, i).join(" ").toLowerCase();
+        if(seriesTail === productHead) overlap = i;
+      }
+
+      // 중복 단어를 제거한 최종 이름 생성
+      const uniqueProductPart = overlap > 0 ? productWords.slice(overlap).join(" ") : p.name;
+      const fullName = uniqueProductPart ? seriesBase + " " + uniqueProductPart : seriesBase + " " + p.name;
       list.push(fullName);
     });
   });
