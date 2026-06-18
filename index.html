@@ -37,6 +37,10 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 }
 
 .filters{padding:14px 20px 4px}
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap input{width:100%;box-sizing:border-box;padding:10px 16px 10px 38px;border:1.5px solid var(--line);border-radius:10px;font-size:.95rem;font-family:inherit;background:var(--card);color:var(--ink);outline:none}
+.search-wrap input:focus{border-color:var(--ink)}
+.search-wrap::before{content:"🔍";position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none}
 .filter-label{font-size:.78rem;font-weight:700;color:var(--ink-soft);letter-spacing:.08em;margin-bottom:6px}
 .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip{
@@ -223,6 +227,9 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 }
 .submit-btn:active{opacity:.85}
 .submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.privacy-wrap{margin-bottom:14px;padding:14px;background:var(--paper-soft,#f5f5f5);border-radius:10px;border:1px solid var(--line);font-size:.82rem;color:var(--ink-soft);line-height:1.6}
+.privacy-wrap label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:8px}
+.privacy-wrap input[type=checkbox]{margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer}
 .sample-close{
   position:absolute;top:20px;right:20px;
   background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink-soft);
@@ -267,6 +274,9 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 </div>
 
 <div class="filters">
+  <div class="search-wrap">
+    <input type="text" id="bookSearch" placeholder="교재명 검색 (예: 리딩튜터, Grammar Zone, 수능만만)" oninput="setSearch(this.value)">
+  </div>
   <div class="filter-label">학년</div>
   <div class="chip-row" id="gradeChips"></div>
   <div class="filter-label">카테고리</div>
@@ -275,7 +285,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
 
 <div class="count" id="countText"></div>
 <main class="series-list" id="seriesList"></main>
-<p class="price-note">표기 가격은 정가 기준입니다. 할인가·재고는 주문 페이지(NE Build &amp; Grow 통합몰)에서 확인됩니다.<br>교재 정보 출처: 2026 NE능률 영어교재 가이드북</p>
+<p class="price-note">표기 가격은 정가 기준입니다. 할인가·재고는 주문 페이지(NE Build &amp; Grow 통합몰)에서 확인됩니다.<br>교재 정보 출처: 2026 NE능률 영어교재 가이드북 · 교재 정보 기준: 2026.06</p>
 
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-sheet" id="detailSheet"></div>
@@ -351,6 +361,15 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px}
         <textarea class="form-input" id="f-memo" rows="3" placeholder="예) 부재 시 경비실 맡겨주세요 / 문 앞에 놔주세요" style="resize:none"></textarea>
       </div>
 
+      <div class="privacy-wrap">
+        <label>
+          <input type="checkbox" id="privacyAgree">
+          개인정보 수집 및 이용에 동의합니다. (필수)
+        </label>
+        수집 항목: 학원명, 신청자명, 직책, 연락처, 주소, 신청 교재<br>
+        이용 목적: 샘플 교재 발송 및 담당자 확인<br>
+        보유 기간: 발송 완료 후 내부 기준에 따라 보관 후 파기
+      </div>
       <button class="submit-btn" onclick="submitSample()">샘플 신청하기</button>
     </div>
     <div class="success-msg" id="successMsg" style="display:none">
@@ -1960,6 +1979,7 @@ const SERIES = [
 
 let selectedGrade = "전체";
 let selectedCategory = "전체";
+let searchQuery = "";
 let filtered = [];
 let currentIndex = 0;
 const GRADE_ORDER_KR  = ["초등","중등","고등"];
@@ -1975,6 +1995,9 @@ function setTab(tab){
   selectedTab = tab;
   selectedGrade = "전체";
   selectedCategory = "전체";
+  searchQuery = "";
+  const si = document.getElementById("bookSearch");
+  if(si) si.value = "";
   document.getElementById("tab-kr").classList.toggle("active", tab==="kr");
   document.getElementById("tab-elt").classList.toggle("active", tab==="elt");
   render();
@@ -2009,6 +2032,7 @@ function buildChips(){
 }
 function setGrade(g){selectedGrade=g;render();}
 function setCategory(c){selectedCategory=c;render();}
+function setSearch(q){searchQuery=q.trim().toLowerCase();render();}
 
 function coverHTML(s){
   if(s.coverImage){
@@ -2024,11 +2048,23 @@ function priceText(p){ return p>0 ? p.toLocaleString()+"원" : "미정"; }
 
 function render(){
   buildChips();
-  filtered = SERIES.filter(s =>
-    (selectedTab==="elt" ? isELT(s) : !isELT(s)) &&
-    (selectedGrade==="전체" || s.grades.includes(selectedGrade)) &&
-    (selectedCategory==="전체" || s.category===selectedCategory)
-  );
+  filtered = SERIES.filter(s => {
+    if(!(selectedTab==="elt" ? isELT(s) : !isELT(s))) return false;
+    if(!(selectedGrade==="전체" || s.grades.includes(selectedGrade))) return false;
+    if(!(selectedCategory==="전체" || s.category===selectedCategory)) return false;
+    if(searchQuery){
+      const q = searchQuery;
+      const inTitle    = (s.title||"").toLowerCase().includes(q);
+      const inSubtitle = (s.subtitle||"").toLowerCase().includes(q);
+      const inTarget   = (s.target||"").toLowerCase().includes(q);
+      const inProducts = s.products.some(p =>
+        (p.name||"").toLowerCase().includes(q) ||
+        (p.target||"").toLowerCase().includes(q)
+      );
+      if(!inTitle && !inSubtitle && !inTarget && !inProducts) return false;
+    }
+    return true;
+  });
   const total = filtered.reduce((n,s)=>n+s.products.length,0);
   document.getElementById("countText").innerHTML =
     `<strong>${filtered.length}개 시리즈</strong> · 총 ${total}종`;
@@ -2283,6 +2319,10 @@ function removeBookRow(btn){
 }
 
 function submitSample(){
+  if(!document.getElementById("privacyAgree").checked){
+    alert("개인정보 수집 및 이용에 동의해주세요.");
+    return;
+  }
   const place = document.getElementById("f-place").value.trim();
   const name  = document.getElementById("f-name").value.trim();
   const phone = document.getElementById("f-phone").value.trim();
