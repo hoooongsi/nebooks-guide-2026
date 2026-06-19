@@ -44,14 +44,15 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 
 /* 샘플 신청 버튼 — 검색창 아래 full-width */
 .sample-cta{
-  display:block;width:100%;box-sizing:border-box;
-  margin-top:10px;padding:13px 0;
-  background:var(--redpen);color:#fff;
-  border:none;border-radius:12px;
-  font-size:1rem;font-weight:700;font-family:inherit;
-  cursor:pointer;text-align:center;
+  display:inline-block;
+  margin-top:10px;
+  background:none;border:none;
+  font-size:.85rem;font-weight:600;font-family:inherit;
+  color:var(--ink-soft);cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
+  padding:0;
 }
-.sample-cta:active{opacity:.85}
+.sample-cta:active{opacity:.6}
 
 /* 헤더 하단 border — 탭 위 */
 .header-bottom-line{height:1px;background:var(--line);margin-top:14px}
@@ -102,6 +103,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 .tag.grade{background:var(--ink);border-color:var(--ink);color:#fff}
 .tag.cat{font-weight:700;border:none}
 .empty{grid-column:1/-1;text-align:center;padding:48px 20px;color:var(--ink-soft)}
+.card-cta{font-size:.82rem;font-weight:700;color:var(--redpen);margin-top:10px;text-align:right;letter-spacing:-.01em}
 
 /* ============ 상세 보기 ============ */
 .detail-overlay{position:fixed;inset:0;background:rgba(28,36,51,.55);display:none;z-index:50}
@@ -153,6 +155,15 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
   background:var(--redpen);color:#fff;font-size:.9rem;font-weight:800;text-decoration:none;white-space:nowrap;
 }
 .order-btn:active{opacity:.85}
+.sample-sub-sec{margin-top:16px;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;text-align:center}
+.sample-sub-sec p{font-size:.85rem;color:var(--ink-soft);margin-bottom:10px;word-break:keep-all;line-height:1.5}
+.sample-sub-btn{
+  display:inline-block;padding:10px 22px;border-radius:10px;
+  border:1.5px solid var(--ink-soft);background:var(--card);
+  color:var(--ink);font-size:.9rem;font-weight:700;font-family:inherit;
+  cursor:pointer;text-decoration:none;
+}
+.sample-sub-btn:active{background:var(--paper)}
 
 .follow-sec{margin-top:18px;background:var(--paper);border-left:4px solid var(--marker);border-radius:0 10px 10px 0;padding:12px 16px;font-size:.9rem;word-break:keep-all}
 .detail-nav{display:flex;gap:10px;margin-top:22px}
@@ -285,7 +296,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
     <div class="global-search-wrap">
       <input type="text" id="bookSearch" placeholder="교재명 통합 검색 (예: 리딩튜터, Grammar Zone…)" oninput="setSearch(this.value)">
     </div>
-    <button class="sample-cta" onclick="openSample()">📦 샘플 교재 신청</button>
+    <button class="sample-cta" onclick="openSample()">샘플 신청이 필요하신가요?</button>
   </div>
   <div class="header-bottom-line"></div>
 </header>
@@ -2127,6 +2138,7 @@ function render(){
            <span class="tag cat">${s.category}</span>
            <span class="tag">${s.products.length}종</span>
          </div>
+         <div class="card-cta">제품/주문 보기 →</div>
        </div>
      </button>`;
   }).join("");
@@ -2173,21 +2185,25 @@ function renderDetail(){
     </div>
 
     <div class="product-sec">
-      <div class="sec-label">제품 구성</div>
+      <div class="sec-label">제품 구성 및 주문</div>
       ${s.products.map(p=>`
         <div class="product-row">
-          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" onerror="this.style.display='none'">`:""}
+          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" onerror="this.style.display='none'">`:""} 
           <div class="p-info">
             <div class="p-name">${p.name}</div>
             <div class="p-meta">${p.target}</div>
           </div>
           <div class="p-price">${priceText(p.price)}</div>
-          ${!isELT(s) && p.orderUrl?`<a class="order-btn" href="${p.orderUrl}" target="_blank" rel="noopener">주문 →</a>`:""}
+          ${!isELT(s) && p.orderUrl?`<a class="order-btn" href="${p.orderUrl}" target="_blank" rel="noopener">주문하기</a>`:""}
         </div>`).join("")}
       ${isELT(s) && s.products[0]?.orderUrl?`
         <a class="order-btn" href="${s.products[0].orderUrl.replace(/\+\d+$|%2C\+\d+$/, '')}" target="_blank" rel="noopener" style="display:flex;margin-top:12px;min-height:52px;border-radius:12px;font-size:1rem">
-          교재 구매하기 →
+          구매 페이지에서 구성 확인 →
         </a>`:""}
+    </div>
+    <div class="sample-sub-sec">
+      <p>구매 전 실물 검토가 필요한 경우 샘플을 신청할 수 있습니다.</p>
+      <button class="sample-sub-btn" onclick="closeDetail();openSample()">샘플 신청하기</button>
     </div>
 
     ${s.followUp?`<div class="follow-sec">${s.followUp}</div>`:""}
