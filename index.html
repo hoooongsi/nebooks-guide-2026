@@ -28,6 +28,7 @@ header{
 header .company{font-size:.78rem;letter-spacing:.18em;color:var(--redpen);font-weight:700}
 header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 .hl{background:linear-gradient(transparent 62%, var(--marker) 62%);padding:0 2px}
+.guide-text{font-size:.85rem;color:var(--ink-soft);margin-top:6px;font-weight:500;word-break:keep-all}
 .header-inner{display:block}
 
 /* 전역 검색창 — 헤더 내부 */
@@ -41,6 +42,13 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 }
 .global-search-wrap input:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
 .global-search-wrap::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none}
+.search-clear-btn{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:24px;height:24px;border-radius:50%;border:none;
+  background:var(--ink-soft);color:#fff;font-size:.9rem;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+}
+.search-clear-btn:active{opacity:.7}
 
 /* 샘플 신청 버튼 — 검색창 아래 full-width */
 .sample-cta{
@@ -70,16 +78,25 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 }
 .chip.active{background:var(--ink);color:#fff}
 .count{padding:2px 20px 12px;font-size:.9rem;color:var(--ink-soft)}
+.reset-filters-btn{
+  margin-top:10px;padding:7px 14px;border-radius:8px;
+  border:1px solid var(--line);background:var(--card);
+  color:var(--ink-soft);font-size:.8rem;font-weight:600;font-family:inherit;
+  cursor:pointer;
+}
+.reset-filters-btn:active{background:var(--paper)}
+.reset-filters-row{padding:0 20px 6px}
+.active-conditions{padding:0 20px 8px;font-size:.78rem;color:var(--ink-soft)}
 .count strong{color:var(--redpen)}
 
 .series-list{display:grid;grid-template-columns:1fr;gap:14px;padding:0 20px 40px}
 @media (min-width:700px){
   .series-list{grid-template-columns:1fr 1fr;gap:18px;padding:0 28px 48px}
-  header,.filters,.count{padding-left:28px;padding-right:28px}
+  header,.filters,.count,.reset-filters-row,.active-conditions{padding-left:28px;padding-right:28px}
 }
 @media (min-width:1024px){
   .series-list{grid-template-columns:1fr 1fr 1fr;max-width:1180px;margin:0 auto}
-  header,.filters,.count{max-width:1180px;margin-left:auto;margin-right:auto}
+  header,.filters,.count,.reset-filters-row,.active-conditions{max-width:1180px;margin-left:auto;margin-right:auto}
 }
 
 .series-card{
@@ -154,9 +171,12 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 .order-btn{
   display:flex;align-items:center;justify-content:center;
   min-height:46px;min-width:74px;padding:0 14px;border-radius:10px;
-  background:var(--redpen);color:#fff;font-size:.9rem;font-weight:800;text-decoration:none;white-space:nowrap;
+  background:#fff;color:var(--redpen);border:1.5px solid var(--redpen);
+  font-size:.9rem;font-weight:800;text-decoration:none;white-space:nowrap;
 }
-.order-btn:active{opacity:.85}
+.order-btn:active{background:#FBEAE7}
+.order-btn-primary{background:var(--redpen);color:#fff;border-color:var(--redpen)}
+.order-btn-primary:active{opacity:.85;background:var(--redpen)}
 .sample-sub-sec{margin-top:16px;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;text-align:center}
 .sample-sub-sec p{font-size:.85rem;color:var(--ink-soft);margin-bottom:10px;word-break:keep-all;line-height:1.5}
 .sample-sub-btn{
@@ -295,29 +315,39 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
   <div class="header-inner">
     <div class="company">건강한 배움의 즐거움, NE능률</div>
     <h1 class="serif"><span class="hl">2026 <span style="color:#E83828">NE</span>능률 영어 가이드북</span></h1>
+    <!-- 메인 안내 문구 수정 위치 -->
+    <p class="guide-text">학년과 수업 목적에 맞는 NE능률 교재를 빠르게 찾아보세요.</p>
     <div class="global-search-wrap">
       <input type="text" id="bookSearch" placeholder="교재명 통합 검색 (예: 리딩튜터, Grammar Zone…)" oninput="setSearch(this.value)">
+      <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="검색어 지우기" onclick="clearSearch()" style="display:none">×</button>
     </div>
-    <button class="sample-cta" onclick="openSample()">샘플 신청이 필요하신가요?</button>
+    <button type="button" class="sample-cta" onclick="openSample()">샘플 교재 신청</button>
   </div>
   <div class="header-bottom-line"></div>
 </header>
 
 <div class="tab-row">
-  <button class="tab-btn active" id="tab-kr" onclick="setTab('kr')">초·중·고등</button>
-  <button class="tab-btn" id="tab-elt" onclick="setTab('elt')">ELT</button>
+  <button type="button" class="tab-btn active" id="tab-kr" onclick="setTab('kr')">초·중·고등</button>
+  <button type="button" class="tab-btn" id="tab-elt" onclick="setTab('elt')">ELT</button>
 </div>
 
-<div class="filters">
+<div class="filters" id="filtersArea">
   <div class="filter-label">학년</div>
   <div class="chip-row" id="gradeChips"></div>
   <div class="filter-label">카테고리</div>
   <div class="chip-row" id="categoryChips"></div>
 </div>
+<div class="reset-filters-row" id="resetFiltersRow" style="display:none">
+  <button type="button" class="reset-filters-btn" onclick="resetFilters()">전체 초기화</button>
+</div>
 
 <div class="count" id="countText"></div>
+<div class="active-conditions" id="activeConditions"></div>
 <main class="series-list" id="seriesList"></main>
-<p class="price-note">표기 가격은 정가 기준입니다. 할인가·재고는 주문 페이지(NE Build &amp; Grow 통합몰)에서 확인됩니다.<br>교재 정보 출처: 2026 NE능률 영어교재 가이드북 · 교재 정보 기준: 2026.06</p>
+<!-- 가격 및 할인 안내 문구 수정 위치 -->
+<p class="price-note">표기 가격은 정가 기준입니다.<br>교강사 대상 10% 할인 적용 여부와 최종 판매가·재고는 주문 페이지에서 확인해 주세요.<br>교재 정보 출처: 2026 NE능률 영어교재 가이드북<br>
+<!-- 사이트 업데이트 날짜 및 버전 수정 위치 -->
+교재 정보 기준: 2026.06 · 사이트 업데이트: 2026.06.30 · v1.1</p>
 
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-sheet" id="detailSheet"></div>
@@ -326,7 +356,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 <!-- 샘플 신청 오버레이 -->
 <div class="sample-overlay" id="sampleOverlay">
   <div class="sample-sheet" style="position:relative">
-    <button class="sample-close" onclick="closeSample()">✕</button>
+    <button type="button" class="sample-close" onclick="closeSample()">✕</button>
     <div id="sampleForm">
       <div class="sample-title">📦 샘플 교재 신청</div>
       <div class="sample-desc">📚 교재당 최대 3부 · 최대 3종 신청 가능<br>✅ 신청 후 영업담당자 확인 후 순차 발송<br>🚚 배송까지 영업일 기준 3~5일 소요될 수 있습니다</div>
@@ -349,9 +379,9 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
       <div class="form-group">
         <label class="form-label">직책 <span>*</span></label>
         <div class="form-radio-row" id="f-role">
-          <button class="form-radio" onclick="selectRole(this,'원장')">원장</button>
-          <button class="form-radio" onclick="selectRole(this,'강사')">강사</button>
-          <button class="form-radio" onclick="selectRole(this,'상담실장')">상담실장</button>
+          <button type="button" class="form-radio" onclick="selectRole(this,'원장')">원장</button>
+          <button type="button" class="form-radio" onclick="selectRole(this,'강사')">강사</button>
+          <button type="button" class="form-radio" onclick="selectRole(this,'상담실장')">상담실장</button>
         </div>
       </div>
 
@@ -384,7 +414,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
             </select>
           </div>
         </div>
-        <button class="add-book-btn" id="addBookBtn" onclick="addBookRow()">+ 교재 추가 (최대 3종)</button>
+        <button type="button" class="add-book-btn" id="addBookBtn" onclick="addBookRow()">+ 교재 추가 (최대 3종)</button>
       </div>
 
       <!-- 추가 요청사항 -->
@@ -400,9 +430,11 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
         </label>
         수집 항목: 학원명, 신청자명, 직책, 연락처, 주소, 신청 교재<br>
         이용 목적: 샘플 교재 발송 및 담당자 확인<br>
-        보유 기간: 발송 완료 후 내부 기준에 따라 보관 후 파기
+        <!-- 개인정보 보유기간: 회사 개인정보 담당 부서 확인 후 실제 기간으로 교체 필요 -->
+        보유 및 이용기간: 샘플 발송 목적 달성 후 회사 개인정보 처리 기준에 따라 파기됩니다. 구체적인 보유기간은 회사 정책 확인 후 업데이트됩니다.<br>
+        개인정보 수집 및 이용 동의를 거부할 수 있으나, 필수정보 수집에 동의하지 않을 경우 샘플 신청이 제한됩니다.
       </div>
-      <button class="submit-btn" onclick="submitSample()">샘플 신청하기</button>
+      <button type="button" class="submit-btn" onclick="submitSample()">샘플 신청하기</button>
     </div>
     <div class="success-msg" id="successMsg" style="display:none">
       <div class="icon">✅</div>
@@ -425,6 +457,7 @@ function loadKakaoSDK(){
       return;
     }
     const script = document.createElement("script");
+    // 카카오 지도 API 설정 위치
     script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=b7acae2da7c908bbacdf11a8c716e00e&libraries=services&autoload=false";
     // 5초 타임아웃
     const timer = setTimeout(() => reject(new Error("Kakao SDK load timeout")), 5000);
@@ -457,6 +490,7 @@ const MALL_ELT = IS_MOBILE
   : "https://www.nebuildandgrow.co.kr/mall/pages/product/list.asp?txt_search=";
 
 
+// 교재 데이터 시작 위치
 const SERIES = [
   {
     title: "능률 VOCA 초등",
@@ -2022,6 +2056,13 @@ const KR_CATS  = ["어휘","문법","독해","문법/구문","쓰기","듣기","
 let selectedTab = "kr"; // "kr" | "elt"
 
 function isELT(s){ return ELT_CATS.includes(s.category); }
+// orderUrl 유효성 검사: null/undefined/공백/http(s) 미시작 시 false
+function isValidOrderUrl(url){
+  if(!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  if(trimmed === "") return false;
+  return trimmed.startsWith("http://") || trimmed.startsWith("https://");
+}
 
 function setTab(tab){
   selectedTab = tab;
@@ -2054,7 +2095,7 @@ function getCatColor(cat){ return CAT_BG[cat]||"#E3E0D8"; }
 function getCatTextColor(cat){ return CAT_FG[cat]||"#1C2433"; }
 
 function buildChips(){
-  const filtersEl = document.querySelector(".filters");
+  const filtersEl = document.getElementById("filtersArea");
   if(searchQuery){
     if(filtersEl) filtersEl.style.display = "none";
     return;
@@ -2065,13 +2106,47 @@ function buildChips(){
   const grades = ["전체", ...gradeOrder.filter(g => seriesInTab.some(s => s.grades.includes(g)))];
   const cats = ["전체", ...new Set(seriesInTab.map(s => s.category))];
   document.getElementById("gradeChips").innerHTML = grades.map(g =>
-    `<button class="chip ${g===selectedGrade?"active":""}" onclick="setGrade('${g}')">${g}</button>`).join("");
+    `<button type="button" class="chip ${g===selectedGrade?"active":""}" onclick="setGrade('${g}')">${g}</button>`).join("");
   document.getElementById("categoryChips").innerHTML = cats.map(c =>
-    `<button class="chip ${c===selectedCategory?"active":""}" onclick="setCategory('${c}')">${c}</button>`).join("");
+    `<button type="button" class="chip ${c===selectedCategory?"active":""}" onclick="setCategory('${c}')">${c}</button>`).join("");
 }
 function setGrade(g){selectedGrade=g;render();}
 function setCategory(c){selectedCategory=c;render();}
-function setSearch(q){searchQuery=q.trim().toLowerCase();render();}
+function setSearch(q){
+  searchQuery=q.trim().toLowerCase();
+  render();
+}
+function clearSearch(){
+  searchQuery = "";
+  const si = document.getElementById("bookSearch");
+  if(si) si.value = "";
+  render();
+  if(si) si.focus();
+}
+// 검색어, 학년, 카테고리를 한 번에 초기화하는 공통 함수 (탭은 유지)
+function resetFilters(){
+  searchQuery = "";
+  selectedGrade = "전체";
+  selectedCategory = "전체";
+  const si = document.getElementById("bookSearch");
+  if(si) si.value = "";
+  render();
+}
+function updateSearchUI(){
+  const clearBtn = document.getElementById("searchClearBtn");
+  if(clearBtn) clearBtn.style.display = searchQuery ? "flex" : "none";
+
+  const hasAnyCondition = !!searchQuery || selectedGrade!=="전체" || selectedCategory!=="전체";
+  const resetRow = document.getElementById("resetFiltersRow");
+  if(resetRow) resetRow.style.display = hasAnyCondition ? "block" : "none";
+
+  const parts = [];
+  if(searchQuery) parts.push(`검색어: ${searchQuery}`);
+  if(selectedGrade!=="전체") parts.push(`학년: ${selectedGrade}`);
+  if(selectedCategory!=="전체") parts.push(`카테고리: ${selectedCategory}`);
+  const condEl = document.getElementById("activeConditions");
+  if(condEl) condEl.textContent = parts.length ? parts.join(" · ") : "";
+}
 
 function coverHTML(s){
   if(s.coverImage){
@@ -2112,6 +2187,8 @@ function render(){
     });
   }
 
+  updateSearchUI();
+
   const total = filtered.reduce((n,s)=>n+s.products.length,0);
   const searchLabel = isGlobalSearch
     ? `"${searchQuery}" 검색 결과 <strong>${filtered.length}개 시리즈</strong> · 총 ${total}종`
@@ -2120,7 +2197,7 @@ function render(){
 
   const list = document.getElementById("seriesList");
   if(filtered.length===0){
-    list.innerHTML = `<div class="empty">조건에 맞는 교재가 없습니다.<br>필터를 바꿔 보세요.</div>`;
+    list.innerHTML = `<div class="empty">조건에 맞는 교재가 없습니다.<br>필터를 바꿔 보세요.<br><button type="button" class="reset-filters-btn" onclick="resetFilters()" style="margin-top:12px">검색 조건 초기화</button></div>`;
     return;
   }
 
@@ -2129,7 +2206,7 @@ function render(){
     const areaBadge = isGlobalSearch
       ? `<span class="tag" style="background:${isELT(s)?"#6B4C9A":"#E83828"};color:#fff">${isELT(s)?"ELT":"초중고"}</span>`
       : "";
-    return `<button class="series-card" onclick="openDetail(${i})">
+    return `<button type="button" class="series-card" onclick="openDetail(${i})">
        ${coverHTML(s)}
        <div class="info">
          <div class="info-body">
@@ -2172,7 +2249,7 @@ function renderDetail(){
         <h2 class="serif">${s.title}</h2>
         <div class="subtitle">${s.subtitle}</div>
       </div>
-      <button class="close-btn" onclick="closeDetail()" aria-label="닫기">✕</button>
+      <button type="button" class="close-btn" onclick="closeDetail()" aria-label="닫기">✕</button>
     </div>
 
     <div class="detail-cover-row">
@@ -2198,23 +2275,23 @@ function renderDetail(){
             <div class="p-meta">${p.target}</div>
           </div>
           <div class="p-price">${priceText(p.price)}</div>
-          ${!isELT(s) && p.orderUrl?`<a class="order-btn" href="${p.orderUrl}" target="_blank" rel="noopener">주문하기</a>`:""}
+          ${isValidOrderUrl(p.orderUrl) && !isELT(s)?`<a class="order-btn" href="${p.orderUrl}" target="_blank" rel="noopener noreferrer">주문 페이지 열기 ↗</a>`:""}
         </div>`).join("")}
-      ${isELT(s) && s.products[0]?.orderUrl?`
-        <a class="order-btn" href="${s.products[0].orderUrl.replace(/\+\d+$|%2C\+\d+$/, '')}" target="_blank" rel="noopener" style="display:flex;margin-top:12px;min-height:52px;border-radius:12px;font-size:1rem">
-          구매 페이지에서 구성 확인 →
+      ${isELT(s) && isValidOrderUrl(s.products[0]?.orderUrl)?`
+        <a class="order-btn order-btn-primary" href="${s.products[0].orderUrl.replace(/\+\d+$|%2C\+\d+$/, '')}" target="_blank" rel="noopener noreferrer" style="display:flex;margin-top:12px;min-height:52px;border-radius:12px;font-size:1rem">
+          주문 페이지 열기 ↗
         </a>`:""}
     </div>
     <div class="sample-sub-sec">
-      <p>구매 전 실물 검토가 필요한 경우 샘플을 신청할 수 있습니다.</p>
-      <button class="sample-sub-btn" onclick="closeDetail();openSample()">샘플 신청하기</button>
+      <p>수업 검토용 샘플 교재가 필요한 경우 신청해 주세요.</p>
+      <button type="button" class="sample-sub-btn" onclick="closeDetail();openSample()">샘플 교재 신청</button>
     </div>
 
     ${s.followUp?`<div class="follow-sec">${s.followUp}</div>`:""}
 
     <div class="detail-nav">
-      <button class="nav-btn" onclick="moveDetail(-1)" ${currentIndex===0?"disabled":""}>← 이전 시리즈</button>
-      <button class="nav-btn" onclick="moveDetail(1)" ${currentIndex===filtered.length-1?"disabled":""}>다음 시리즈 →</button>
+      <button type="button" class="nav-btn" onclick="moveDetail(-1)" ${currentIndex===0?"disabled":""}>← 이전 시리즈</button>
+      <button type="button" class="nav-btn" onclick="moveDetail(1)" ${currentIndex===filtered.length-1?"disabled":""}>다음 시리즈 →</button>
     </div>
     <div class="detail-pos">${currentIndex+1} / ${filtered.length}</div>
   `;
@@ -2234,6 +2311,7 @@ sheet.addEventListener("touchend",e=>{
 render();
 
 /* ===== 샘플 신청 ===== */
+// 샘플 신청 전송 URL 또는 Google 연동 설정 위치
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdHEpBxMiYeTiX3E-JHvKldPT3hrMcCTFzlCIDJfp0cF9jVPQ/formResponse";
 const ENTRY = {
   place: "entry.1672236711",
@@ -2372,7 +2450,7 @@ function addBookRow(){
       <option value="2">2부</option>
       <option value="3">3부</option>
     </select>
-    <button class="remove-book-btn" onclick="removeBookRow(this)">✕</button>`;
+    <button type="button" class="remove-book-btn" onclick="removeBookRow(this)">✕</button>`;
   document.getElementById("bookRows").appendChild(div);
   if(bookCount >= 3) document.getElementById("addBookBtn").style.display = "none";
 }
