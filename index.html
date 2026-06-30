@@ -165,6 +165,10 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 }
 .product-row .p-info{flex:1;min-width:0}
 .product-row .p-thumb{width:40px;height:55px;object-fit:cover;border-radius:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.p-thumb-placeholder{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  background:#E3E0D8;color:#7a766c;font-size:.6rem;font-weight:600;line-height:1.3;
+}
 .product-row .p-name{font-weight:800;font-size:.95rem;word-break:keep-all}
 .product-row .p-meta{font-size:.82rem;color:var(--ink-soft);margin-top:2px;word-break:keep-all}
 .product-row .p-price{font-size:.88rem;font-weight:700;white-space:nowrap}
@@ -280,6 +284,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 }
 .submit-btn:active{opacity:.85}
 .submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.submit-fail-msg{color:var(--redpen);font-size:.85rem;font-weight:600;text-align:center;margin-bottom:10px;word-break:keep-all}
 .privacy-wrap{margin-bottom:14px;padding:14px;background:var(--paper-soft,#f5f5f5);border-radius:10px;border:1px solid var(--line);font-size:.82rem;color:var(--ink-soft);line-height:1.6}
 .privacy-wrap label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:8px}
 .privacy-wrap input[type=checkbox]{margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer}
@@ -318,7 +323,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
     <!-- 메인 안내 문구 수정 위치 -->
     <p class="guide-text">학년과 수업 목적에 맞는 NE능률 교재를 빠르게 찾아보세요.</p>
     <div class="global-search-wrap">
-      <input type="text" id="bookSearch" placeholder="교재명 통합 검색 (예: 리딩튜터, Grammar Zone…)" oninput="setSearch(this.value)">
+      <input type="text" id="bookSearch" aria-label="교재명 통합 검색" placeholder="교재명 통합 검색 (예: 리딩튜터, Grammar Zone…)" oninput="setSearch(this.value)">
       <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="검색어 지우기" onclick="clearSearch()" style="display:none">×</button>
     </div>
     <button type="button" class="sample-cta" onclick="openSample()">샘플 교재 신청</button>
@@ -326,9 +331,9 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
   <div class="header-bottom-line"></div>
 </header>
 
-<div class="tab-row">
-  <button type="button" class="tab-btn active" id="tab-kr" onclick="setTab('kr')">초·중·고등</button>
-  <button type="button" class="tab-btn" id="tab-elt" onclick="setTab('elt')">ELT</button>
+<div class="tab-row" role="tablist">
+  <button type="button" class="tab-btn active" id="tab-kr" role="tab" aria-selected="true" onclick="setTab('kr')">초·중·고등</button>
+  <button type="button" class="tab-btn" id="tab-elt" role="tab" aria-selected="false" onclick="setTab('elt')">ELT</button>
 </div>
 
 <div class="filters" id="filtersArea">
@@ -350,15 +355,15 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 교재 정보 기준: 2026.06 · 사이트 업데이트: 2026.06.30 · v1.1</p>
 
 <div class="detail-overlay" id="detailOverlay">
-  <div class="detail-sheet" id="detailSheet"></div>
+  <div class="detail-sheet" id="detailSheet" role="dialog" aria-modal="true" aria-labelledby="detailTitleText"></div>
 </div>
 
 <!-- 샘플 신청 오버레이 -->
 <div class="sample-overlay" id="sampleOverlay">
-  <div class="sample-sheet" style="position:relative">
-    <button type="button" class="sample-close" onclick="closeSample()">✕</button>
+  <div class="sample-sheet" style="position:relative" role="dialog" aria-modal="true" aria-labelledby="sampleTitleText">
+    <button type="button" class="sample-close" onclick="closeSample()" aria-label="샘플 신청 닫기">✕</button>
     <div id="sampleForm">
-      <div class="sample-title">📦 샘플 교재 신청</div>
+      <div class="sample-title" id="sampleTitleText">📦 샘플 교재 신청</div>
       <div class="sample-desc">📚 교재당 최대 3부 · 최대 3종 신청 가능<br>✅ 신청 후 영업담당자 확인 후 순차 발송<br>🚚 배송까지 영업일 기준 3~5일 소요될 수 있습니다</div>
 
       <!-- 학원명 -->
@@ -434,6 +439,7 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
         보유 및 이용기간: 샘플 발송 목적 달성 후 회사 개인정보 처리 기준에 따라 파기됩니다. 구체적인 보유기간은 회사 정책 확인 후 업데이트됩니다.<br>
         개인정보 수집 및 이용 동의를 거부할 수 있으나, 필수정보 수집에 동의하지 않을 경우 샘플 신청이 제한됩니다.
       </div>
+      <p id="submitFailMsg" class="submit-fail-msg" aria-live="polite" style="display:none">샘플 신청을 완료하지 못했습니다. 입력 내용을 확인한 뒤 다시 시도해 주세요.</p>
       <button type="button" class="submit-btn" onclick="submitSample()">샘플 신청하기</button>
     </div>
     <div class="success-msg" id="successMsg" style="display:none">
@@ -2064,6 +2070,48 @@ function isValidOrderUrl(url){
   return trimmed.startsWith("http://") || trimmed.startsWith("https://");
 }
 
+// 개발자 콘솔에서 auditProductLinks()를 실행하면 주문 링크 누락 및 중복을 확인할 수 있습니다.
+function auditProductLinks(){
+  let totalSeries = SERIES.length;
+  let totalProducts = 0;
+  const missing = [];
+  const invalid = [];
+  const urlMap = {}; // url -> [product name 목록] (중복 탐지용)
+
+  SERIES.forEach(s => {
+    s.products.forEach(p => {
+      totalProducts++;
+      const url = p.orderUrl;
+      const label = `${s.title} - ${p.name}`;
+
+      if(!url || (typeof url === "string" && url.trim() === "")){
+        missing.push(label);
+        return;
+      }
+      if(!isValidOrderUrl(url)){
+        invalid.push(`${label} (${url})`);
+        return;
+      }
+      if(!urlMap[url]) urlMap[url] = [];
+      urlMap[url].push(label);
+    });
+  });
+
+  const duplicates = Object.entries(urlMap).filter(([url, labels]) => labels.length > 1);
+  const duplicateCount = duplicates.reduce((n, [,labels]) => n + labels.length, 0);
+
+  console.log("===== 주문 링크 점검 결과 =====");
+  console.log("전체 시리즈 수:", totalSeries);
+  console.log("전체 상품 수:", totalProducts);
+  console.log("주문 URL이 없는 상품 수:", missing.length);
+  console.log("주문 URL이 없는 상품 목록:", missing);
+  console.log("잘못된 형식의 URL 수:", invalid.length);
+  console.log("잘못된 형식의 URL 목록:", invalid);
+  console.log("중복 URL 수:", duplicateCount);
+  console.log("중복 URL 목록:", duplicates.map(([url, labels]) => ({ url, products: labels })));
+  console.log("===============================");
+}
+
 function setTab(tab){
   selectedTab = tab;
   selectedGrade = "전체";
@@ -2074,6 +2122,8 @@ function setTab(tab){
   buildChips();
   document.getElementById("tab-kr").classList.toggle("active", tab==="kr");
   document.getElementById("tab-elt").classList.toggle("active", tab==="elt");
+  document.getElementById("tab-kr").setAttribute("aria-selected", tab==="kr");
+  document.getElementById("tab-elt").setAttribute("aria-selected", tab==="elt");
   render();
 }
 
@@ -2150,8 +2200,8 @@ function updateSearchUI(){
 
 function coverHTML(s){
   if(s.coverImage){
-    return `<div class="cover img"><img src="${s.coverImage}" alt="${s.title} 대표 표지"
-              onerror="this.parentNode.outerHTML='<div class=cover style=background:${s.coverColor}><div class=cover-title style=color:${s.coverColor==="#A0D2F2"?"#1C2433":"#fff"}>${s.title}</div></div>'"></div>`;
+    return `<div class="cover img"><img src="${s.coverImage}" alt="${s.title} 대표 표지" loading="lazy" width="86" height="118"
+              onerror="this.parentNode.outerHTML='<div class=cover style=background:#E3E0D8><div class=cover-title style=color:#1C2433>표지 이미지<br>준비 중</div></div>'"></div>`;
   }
   const lightBg = s.coverColor === "#A0D2F2";
   return `<div class="cover" style="background:${s.coverColor}">
@@ -2226,6 +2276,7 @@ function render(){
 }
 
 function openDetail(i){
+  lastFocusedEl = document.activeElement;
   currentIndex=i; renderDetail();
   document.getElementById("detailOverlay").classList.add("open");
   document.body.style.overflow="hidden";
@@ -2233,6 +2284,7 @@ function openDetail(i){
 function closeDetail(){
   document.getElementById("detailOverlay").classList.remove("open");
   document.body.style.overflow="";
+  if(lastFocusedEl && typeof lastFocusedEl.focus === "function") lastFocusedEl.focus();
 }
 function moveDetail(step){
   const n=currentIndex+step;
@@ -2246,10 +2298,10 @@ function renderDetail(){
     <div class="detail-top">
       <div>
         <div class="detail-eyebrow">${s.grades.join(" · ")} · ${s.category}</div>
-        <h2 class="serif">${s.title}</h2>
+        <h2 class="serif" id="detailTitleText">${s.title}</h2>
         <div class="subtitle">${s.subtitle}</div>
       </div>
-      <button type="button" class="close-btn" onclick="closeDetail()" aria-label="닫기">✕</button>
+      <button type="button" class="close-btn" onclick="closeDetail()" aria-label="교재 상세 닫기">✕</button>
     </div>
 
     <div class="detail-cover-row">
@@ -2269,7 +2321,7 @@ function renderDetail(){
       <div class="sec-label">제품 구성 및 주문</div>
       ${s.products.map(p=>`
         <div class="product-row">
-          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" onerror="this.style.display='none'">`:""} 
+          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" width="40" height="55" onerror="this.outerHTML='<div class=\\'p-thumb p-thumb-placeholder\\'>표지<br>준비중</div>'">`:""} 
           <div class="p-info">
             <div class="p-name">${p.name}</div>
             <div class="p-meta">${p.target}</div>
@@ -2326,18 +2378,41 @@ const ENTRY = {
 let selectedRole = "";
 let placeSearchTimer = null;
 let bookCount = 1;
+let isSubmitting = false; // 샘플 신청 중복 제출 방지 상태
+let lastFocusedEl = null; // 모달 열기 전 포커스 위치 — 닫을 때 복귀용
 
 function openSample(){
   document.getElementById("sampleOverlay").classList.add("open");
   document.body.style.overflow = "hidden";
   loadKakaoSDK().catch(e => console.warn("카카오 SDK 로드 실패", e));
+
+  // 모달을 다시 열 때 이전 성공/실패 상태와 제출 상태 초기화
+  isSubmitting = false;
+  document.getElementById("sampleForm").style.display = "";
+  document.getElementById("successMsg").style.display = "none";
+  const failMsg = document.getElementById("submitFailMsg");
+  if(failMsg) failMsg.style.display = "none";
+  const btn = document.querySelector(".submit-btn");
+  if(btn){ btn.disabled = false; btn.textContent = "샘플 신청하기"; }
+
+  lastFocusedEl = document.activeElement;
 }
 function closeSample(){
   document.getElementById("sampleOverlay").classList.remove("open");
   document.body.style.overflow = "";
+  if(lastFocusedEl && typeof lastFocusedEl.focus === "function") lastFocusedEl.focus();
 }
 document.getElementById("sampleOverlay").addEventListener("click", e => {
   if(e.target.id === "sampleOverlay") closeSample();
+});
+
+// ESC 키로 열린 모달 닫기 (샘플 신청 모달 우선, 그 다음 상세 모달)
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  const sampleOpen = document.getElementById("sampleOverlay").classList.contains("open");
+  const detailOpen = document.getElementById("detailOverlay").classList.contains("open");
+  if(sampleOpen){ closeSample(); }
+  else if(detailOpen){ closeDetail(); }
 });
 
 function selectRole(btn, role){
@@ -2461,6 +2536,7 @@ function removeBookRow(btn){
 }
 
 function submitSample(){
+  if(isSubmitting) return; // 중복 제출 방지: 이미 제출 중이면 재실행하지 않음
   if(!document.getElementById("privacyAgree").checked){
     alert("개인정보 수집 및 이용에 동의해주세요.");
     return;
@@ -2491,7 +2567,12 @@ function submitSample(){
     alert("신청 교재를 1종 이상 입력해주세요."); return;
   }
   const booksStr = bookEntries.join(", ");
+
+  // 모든 유효성 검사 통과 → 실제 제출 시작
+  isSubmitting = true;
   const btn = document.querySelector(".submit-btn");
+  const failMsg = document.getElementById("submitFailMsg");
+  if(failMsg) failMsg.style.display = "none";
   btn.disabled = true;
   btn.textContent = "신청 중...";
   const body = new URLSearchParams();
@@ -2510,9 +2591,10 @@ function submitSample(){
     document.getElementById("sampleForm").style.display = "none";
     document.getElementById("successMsg").style.display = "block";
   }).catch(() => {
+    isSubmitting = false;
     btn.disabled = false;
     btn.textContent = "샘플 신청하기";
-    alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    if(failMsg) failMsg.style.display = "block";
   });
 }
 </script>
