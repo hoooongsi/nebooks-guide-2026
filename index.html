@@ -113,11 +113,17 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 }
 
 .series-card{
-  display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;
-  padding:14px;cursor:pointer;text-align:left;font-family:inherit;width:100%;
-  align-items:stretch;min-height:146px;
+  display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:14px;text-align:left;font-family:inherit;width:100%;
+  min-height:146px;position:relative;box-sizing:border-box;
 }
-.series-card:active{background:#F4F2EC}
+.series-card:hover{background:#F8F6F0}
+.series-card-main{
+  display:flex;flex-direction:row;gap:14px;flex:1;min-width:0;align-items:stretch;
+  background:none;border:none;padding:0;margin:0;
+  cursor:pointer;text-align:left;font-family:inherit;width:100%;
+}
+.series-card-main:focus-visible{outline:2px solid var(--redpen);outline-offset:2px;border-radius:10px}
 .cover{
   flex-shrink:0;width:86px;height:118px;border-radius:6px;overflow:hidden;
   display:flex;flex-direction:column;justify-content:space-between;padding:8px;color:#fff;
@@ -138,6 +144,21 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
 .card-cta{font-size:.82rem;font-weight:700;color:var(--redpen);margin-top:auto;padding-top:8px;text-align:right;letter-spacing:-.01em}
 .card-bottom-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px}
 .card-bottom-row .card-cta{margin-top:0;padding-top:0}
+.card-cta-btn{
+  background:none;border:none;padding:0;margin:0;
+  font-size:.82rem;font-weight:700;color:var(--redpen);
+  cursor:pointer;font-family:inherit;letter-spacing:-.01em;
+}
+.card-cta-btn:focus-visible{outline:2px solid var(--redpen);outline-offset:2px;border-radius:4px}
+.btn-compare-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  border:none;background:none;padding:0;margin:0;
+  color:var(--ink-soft);font-size:.75rem;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.btn-compare-btn.in-compare{color:var(--ink);font-weight:800}
+.btn-compare-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:4px}
 
 /* ============ 상세 보기 ============ */
 .detail-overlay{position:fixed;inset:0;background:rgba(28,36,51,.55);display:none;z-index:50}
@@ -316,6 +337,9 @@ header h1{font-size:1.5rem;font-weight:800;margin-top:2px;margin-bottom:0}
   box-shadow:0 -2px 12px rgba(0,0,0,.18);
 }
 .compare-bar.visible{transform:translateY(0)}
+/* 비교 바가 보일 때 콘텐츠 하단이 가려지지 않도록 여백 확보 */
+body.compare-active .series-list{padding-bottom:120px}
+body.compare-active footer{padding-bottom:120px}
 .compare-bar-label{font-size:.95rem;font-weight:700}
 .compare-bar-btn{
   padding:9px 18px;border-radius:10px;border:none;
@@ -2358,11 +2382,18 @@ function render(){
       const inTitle    = normalizeSearchText(s.title).includes(q);
       const inSubtitle = normalizeSearchText(s.subtitle).includes(q);
       const inTarget   = normalizeSearchText(s.target).includes(q);
+      // grades, category, 조합 텍스트 포함 ("초등 독해", "중등 문법" 등 조합 검색 지원)
+      const inCategory = normalizeSearchText(s.category).includes(q);
+      const inGrades   = s.grades.some(g => normalizeSearchText(g).includes(q));
+      const inCombined = s.grades.some(g =>
+        normalizeSearchText(g + s.category).includes(q) ||
+        normalizeSearchText(g + " " + s.category).includes(q)
+      );
       const inProducts = s.products.some(p =>
         normalizeSearchText(p.name).includes(q) ||
         normalizeSearchText(p.target||"").includes(q)
       );
-      return inTitle || inSubtitle || inTarget || inProducts;
+      return inTitle || inSubtitle || inTarget || inCategory || inGrades || inCombined || inProducts;
     });
   } else {
     // 일반 탐색: 탭 + 학년 + 카테고리 필터
@@ -2422,29 +2453,31 @@ function render(){
 
     const sIdx = SERIES.indexOf(s);
     const inCmp = compareList.includes(sIdx);
-    return `<button type="button" class="series-card" onclick="openDetail(${i})">
-       ${coverHTML(s)}
-       <div class="info">
-         <div class="info-body">
-           <h2>${s.title}</h2>
-           <div class="subtitle">${s.subtitle}</div>
-           <div class="tag-row">
-             ${areaBadge}
-             ${s.grades.map(g=>`<span class="tag grade">${g}</span>`).join("")}
-             <span class="tag cat">${s.category}</span>
-             <span class="tag">${s.products.length}종</span>
+    return `<article class="series-card">
+       <button type="button" class="series-card-main" onclick="openDetail(${i})" aria-label="${s.title} 상세 보기">
+         ${coverHTML(s)}
+         <div class="info">
+           <div class="info-body">
+             <h2>${s.title}</h2>
+             <div class="subtitle">${s.subtitle}</div>
+             <div class="tag-row">
+               ${areaBadge}
+               ${s.grades.map(g=>`<span class="tag grade">${g}</span>`).join("")}
+               <span class="tag cat">${s.category}</span>
+               <span class="tag">${s.products.length}종</span>
+             </div>
+             ${matchLine}
            </div>
-           ${matchLine}
          </div>
-         <div class="card-bottom-row">
-           <div class="btn-compare ${inCmp?'in-compare':''}"
-             onclick="event.stopPropagation();toggleCompare(${sIdx})" role="button" tabindex="0">
-             ${inCmp?"✓ 비교 담김":"＋ 비교 담기"}
-           </div>
-           <div class="card-cta" style="margin-top:0">제품/주문 보기 →</div>
-         </div>
+       </button>
+       <div class="card-bottom-row">
+         <button type="button" class="btn-compare-btn ${inCmp?'in-compare':''}"
+           onclick="toggleCompare(${sIdx})">
+           ${inCmp?"✓ 비교 담김":"＋ 비교 담기"}
+         </button>
+         <button type="button" class="card-cta-btn" onclick="openDetail(${i})">제품/주문 보기 →</button>
        </div>
-     </button>`;
+     </article>`;
   }).join("");
 }
 
@@ -2628,8 +2661,10 @@ function updateCompareBar(){
   if(compareList.length > 0){
     bar.classList.add("visible");
     label.textContent = `비교함 ${compareList.length}개`;
+    document.body.classList.add("compare-active");
   } else {
     bar.classList.remove("visible");
+    document.body.classList.remove("compare-active");
   }
 }
 function clearCompare(){
