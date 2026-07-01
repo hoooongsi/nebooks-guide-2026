@@ -2541,7 +2541,7 @@ function renderDetail(){
       <div class="sec-label">제품 구성 및 주문</div>
       ${s.products.map(p=>`
         <div class="product-row">
-          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" width="66" height="92" onerror="this.outerHTML='<div class=\\'p-thumb p-thumb-placeholder\\'>표지<br>준비중</div>'">`:""} 
+          ${p.cover?`<img class="p-thumb" src="${p.cover}" alt="${p.name} 표지" loading="lazy" style="width:66px;height:92px;object-fit:cover;object-position:center top;display:block;border-radius:6px;flex-shrink:0" onerror="this.outerHTML='<div class=\\'p-thumb p-thumb-placeholder\\'>표지<br>준비중</div>'">`:""} 
           <div class="p-info">
             <div class="p-name">${p.name}</div>
             <div class="p-meta">${p.target}</div>
