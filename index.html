@@ -2659,6 +2659,40 @@ function openSample(){
   const btn = document.querySelector(".submit-btn");
   if(btn){ btn.disabled = false; btn.textContent = "샘플 신청하기"; }
 
+  // 폼 필드 전체 초기화
+  document.getElementById("f-place").value = "";
+  document.getElementById("f-name").value = "";
+  document.getElementById("f-phone").value = "";
+  document.getElementById("f-addr").value = "";
+  document.getElementById("f-addr-detail").value = "";
+  document.getElementById("f-memo").value = "";
+  document.getElementById("privacyAgree").checked = false;
+  // 학원 주소 표시 초기화
+  const kr = document.getElementById("kakaoResult");
+  if(kr){ kr.textContent = ""; kr.style.display = "none"; }
+  const placeList = document.getElementById("placeList");
+  if(placeList) placeList.style.display = "none";
+  // 직책 선택 초기화
+  selectedRole = "";
+  document.querySelectorAll("#f-role .form-radio").forEach(b => b.classList.remove("selected"));
+  // 교재 행 초기화: 1개만 남기고 초기화
+  bookCount = 1;
+  const bookRows = document.getElementById("bookRows");
+  if(bookRows){
+    const rows = bookRows.querySelectorAll(".book-row");
+    rows.forEach((row, i) => {
+      if(i === 0){
+        row.querySelector("input").value = "";
+        row.querySelector("select").value = "1";
+        row.querySelector(".book-autocomplete").style.display = "none";
+      } else {
+        row.remove();
+      }
+    });
+  }
+  const addBtn = document.getElementById("addBookBtn");
+  if(addBtn) addBtn.style.display = "";
+
   lastFocusedEl = document.activeElement;
   // 샘플 신청 모달 열릴 때 학원명 입력칸으로 포커스
   requestAnimationFrame(() => {
