@@ -390,6 +390,33 @@ body.compare-active footer{padding-bottom:120px}
   background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
   display:flex;flex-direction:column;
 }
+/* 모바일에서 가로 스와이프 */
+.compare-swipe-hint{
+  display:none;font-size:.78rem;color:var(--ink-soft);
+  margin-bottom:10px;text-align:center;
+}
+@media (max-width:699px){
+  .compare-swipe-hint{display:block}
+  .compare-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:8px;
+    /* 스크롤바 얇게 */
+    scrollbar-width:thin;
+    scrollbar-color:var(--line) transparent;
+  }
+  .compare-grid::-webkit-scrollbar{height:4px}
+  .compare-grid::-webkit-scrollbar-track{background:transparent}
+  .compare-grid::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+  .compare-col{
+    flex:0 0 84%;
+    max-width:84%;
+    scroll-snap-align:start;
+  }
+}
 .compare-col-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
 .compare-col-thumb{
   width:54px;height:74px;border-radius:6px;flex-shrink:0;
@@ -2984,6 +3011,7 @@ function submitSample(){
       <h2>담은 교재 비교</h2>
       <button type="button" class="compare-close" onclick="closeCompare()" aria-label="비교 닫기">✕</button>
     </div>
+    <p class="compare-swipe-hint">← 좌우로 넘겨 담은 교재를 비교해 보세요. →</p>
     <div class="compare-grid" id="compareGrid"></div>
   </div>
 </div>
